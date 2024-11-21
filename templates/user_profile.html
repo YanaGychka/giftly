@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="profile-page">
+        <div class="profile-section">
+            <div class="header-content">
+                <h1>{{ user[1] }}</h1>
+                <div class="profile-pic-container">
+                    <img src="{{ url_for('static', filename='uploads/' + user[2]) }}" alt="Profile" class="profile-pic">
+                    {% if is_owner %}
+                    <div class="edit-profile-pic">Змінити фото</div>
+                    <form action="{{ url_for('update_profile_pic') }}" method="post" enctype="multipart/form-data" id="profile-pic-form">
+                        <input type="file" name="profile_pic" id="profile-pic-input" accept="image/*" onchange="this.form.submit()">
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="wishes-section">
+            <div class="wishes-title">Список побажань</div>
+            <div class="wishes-container">
+                {% if is_owner %}
+                <a href="{{ url_for('add_wish') }}" class="add-wish-card">
+                    <div class="plus-icon">+</div>
+                    <span>Додати бажання</span>
+                </a>
+                {% endif %}
+                
+                {% for wish in wishes %}
+                <a href="{{ url_for('wish_detail', wish_id=wish[0]) }}" class="wish-card">
+                    <img src="{{ url_for('static', filename='uploads/' + wish[2]) }}" alt="{{ wish[1] }}">
+                    <div class="wish-card-content">
+                        <h3>{{ wish[1] }}</h3>
+                        <div class="wish-price">₴ {{ "%.2f"|format(wish[4]|float) if wish[4] else '0.00' }}</div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% if is_owner %}
+    <script>
+        document.querySelector('.edit-profile-pic').addEventListener('click', function() {
+            document.getElementById('profile-pic-input').click();
+        });
+    </script>
+    {% endif %}
+{% endblock %}

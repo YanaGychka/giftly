@@ -1,0 +1,20 @@
+<div class="feed-wish-card">
+    <div class="wish-header">
+        <div class="user-info">
+            <img src="{{ url_for('static', filename='uploads/' + wish.user_pic) }}" alt="Profile" class="user-pic">
+            <a href="{{ url_for('user_profile', user_id=wish.user_id) }}" class="username">{{ wish.username }}</a>
+        </div>
+    </div>
+
+    <a href="{{ url_for('wish_detail', wish_id=wish.id) }}" class="wish-content">
+        <img src="{{ url_for('static', filename='uploads/' + wish.image) }}" alt="{{ wish.title }}" class="wish-image">
+        
+        <div class="wish-info">
+            <h3>{{ wish.title }}</h3>
+            <div class="wish-description">{{ wish.description }}</div>
+            <div class="wish-price">
+                ₴ {{ "%.2f"|format(wish.price|float) if wish.price else '0.00' }}
+            </div>
+        </div>
+    </a>
+</div>

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1>Реєстрація</h1>
+
+        <form action="{{ url_for('register') }}" method="POST">
+            <div class="form-group">
+                <input 
+                    type="text" 
+                    name="username" 
+                    placeholder="Ім'я"
+                    required
+                    minlength="3"
+                    class="form-input"
+                >
+            </div>
+
+            <div class="form-group">
+                <input 
+                    type="email" 
+                    name="email" 
+                    placeholder="Email"
+                    required
+                    class="form-input"
+                >
+            </div>
+
+            <div class="form-group">
+                <input 
+                    type="password" 
+                    name="password" 
+                    placeholder="Пароль"
+                    required
+                    minlength="8"
+                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                    title="Пароль повинен містити мінімум 8 символів, включаючи хоча б одну цифру, одну велику і одну малу літеру"
+                    class="form-input"
+                    id="password"
+                >
+                <div class="password-requirements">
+                    <small>Пароль повинен містити:</small>
+                    <ul>
+                        <li id="length">Мінімум 8 символів</li>
+                        <li id="lowercase">Хоча б одну малу літеру</li>
+                        <li id="uppercase">Хоча б одну велику літеру</li>
+                        <li id="number">Хоча б одну цифру</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input 
+                    type="password" 
+                    name="confirm_password" 
+                    placeholder="Повторити пароль"
+                    required
+                    minlength="8"
+                    class="form-input"
+                    id="confirm_password"
+                >
+                <small id="password-match" class="password-match"></small>
+            </div>
+
+            <div class="auth-links">
+                <a href="{{ url_for('login') }}">Увійти</a>
+                <a href="#">Забули пароль?</a>
+            </div>
+
+            <button type="submit" class="auth-button">Продовжити</button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    const lengthCheck = document.getElementById('length');
+    const lowercaseCheck = document.getElementById('lowercase');
+    const uppercaseCheck = document.getElementById('uppercase');
+    const numberCheck = document.getElementById('number');
+    const passwordMatch = document.getElementById('password-match');
+
+    function validatePassword() {
+        // Перевірка довжини
+        if(password.value.length >= 8) {
+            lengthCheck.classList.add('valid');
+        } else {
+            lengthCheck.classList.remove('valid');
+        }
+
+        // Перевірка малих літер
+        if(/[a-z]/.test(password.value)) {
+            lowercaseCheck.classList.add('valid');
+        } else {
+            lowercaseCheck.classList.remove('valid');
+        }
+
+        // Перевірка великих літер
+        if(/[A-Z]/.test(password.value)) {
+            uppercaseCheck.classList.add('valid');
+        } else {
+            uppercaseCheck.classList.remove('valid');
+        }
+
+        // Перевірка цифр
+        if(/\d/.test(password.value)) {
+            numberCheck.classList.add('valid');
+        } else {
+            numberCheck.classList.remove('valid');
+        }
+    }
+
+    function checkPasswordMatch() {
+        if(password.value === confirmPassword.value) {
+            passwordMatch.textContent = 'Паролі співпадають';
+            passwordMatch.className = 'password-match valid';
+        } else {
+            passwordMatch.textContent = 'Паролі не співпадають';
+            passwordMatch.className = 'password-match invalid';
+        }
+    }
+
+    password.addEventListener('keyup', validatePassword);
+    password.addEventListener('keyup', checkPasswordMatch);
+    confirmPassword.addEventListener('keyup', checkPasswordMatch);
+});
+</script>
+{% endblock %}

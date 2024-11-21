@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giftly</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}" class="site-title">Giftly</a>
+        
+        <!-- Нова секція пошуку -->
+        <div class="search-container">
+            <form action="{{ url_for('search') }}" method="GET" class="search-form">
+                <input type="text" name="q" placeholder="Пошук..." value="{{ request.args.get('q', '') }}">
+                <button type="submit" class="search-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </form>
+        </div>
+        
+        <ul>
+            <li><a href="{{ url_for('index') }}">Головна</a></li>
+            {% if session.user_id %}
+                <li><a href="{{ url_for('user_profile', user_id=session.user_id) }}">Мій профіль</a></li>
+                <li><a href="{{ url_for('logout') }}">Вийти</a></li>
+            {% else %}
+                <li><a href="{{ url_for('login') }}">Увійти</a></li>
+                <li><a href="{{ url_for('register') }}">Зареєструватися</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</body>
+</html>

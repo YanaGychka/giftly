@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вхід</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1>Вхід</h1>
+            
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="username">Ім'я</label>
+                    <input type="email" id="username" name="username" 
+                           placeholder="email@example.com" required 
+                           value="{{ request.form.username }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password" 
+                           placeholder="••••••••" required>
+                </div>
+
+                <div class="auth-links">
+                    <a href="{{ url_for('register') }}">Зареєструватися</a>
+                    <a href="#">Забули пароль?</a>
+                </div>
+
+                <button type="submit" class="auth-button">Продовжити</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

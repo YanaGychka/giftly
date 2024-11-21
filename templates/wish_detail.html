@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wish-detail-container">
+    <div class="wish-detail">
+        <img src="{{ url_for('static', filename='uploads/' + wish[5]) }}" alt="{{ wish[2] }}">
+        
+        <div class="wish-detail-content">
+            <h1>{{ wish[2] }}</h1>
+            
+            <div class="wish-price">₴ {{ "%.2f"|format(wish[4]|float) if wish[4] else '0.00' }}</div>
+            
+            <div class="wish-description">{{ wish[3] }}</div>
+            
+            {% if wish[6] %}
+            <a href="{{ wish[6] }}" class="product-link" target="_blank">Перейти до товару</a>
+            {% endif %}
+            
+            <div class="meta-info">
+                <p>Додано користувачем: {{ wish[8] }}</p>
+                <p>Дата: {{ wish[7] }}</p>
+            </div>
+
+            {% if is_owner %}
+            <div class="wish-actions">
+                <button class="delete-button" onclick="confirmDelete()">Видалити</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete() {
+    if (confirm('Ви впевнені, що хочете видалити це побажання?')) {
+        fetch('{{ url_for("delete_wish", wish_id=wish[0]) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = '{{ url_for("user_profile", user_id=session.user_id) }}';
+            } else {
+                alert('Помилка при видаленні побажання');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Помилка при видаленні побажання');
+        });
+    }
+}
+</script>
+{% endblock %}

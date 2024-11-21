@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="search-results">
+    <div class="page-header">
+        <h1>Результати пошуку "{{ query }}"</h1>
+    </div>
+
+    {% if users %}
+    <div class="search-results-section">
+        <h2>Користувачі</h2>
+        <div class="search-results-grid">
+            {% for user in users %}
+            <div class="user-card">
+                <img src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" alt="Profile">
+                <a href="{{ url_for('user_profile', user_id=user.id) }}">{{ user.username }}</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if wishes %}
+    <div class="search-results-section">
+        <h2>Побажання</h2>
+        <div class="wishes-feed">
+            {% for wish in wishes %}
+                {% include '_wish_card.html' %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not users and not wishes %}
+    <div class="search-results-section">
+        <p>Нічого не знайдено за вашим запитом</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
