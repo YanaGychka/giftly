@@ -1,64 +1,54 @@
-# app.py
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import sqlite3
 from datetime import datetime
-from flask import request
-
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key_here')
 
-# Конфігурація для завантаження файлів
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/uploads')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# Переконайтеся, що папка uploads існує
+# Налаштування для файлів
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def get_db_path():
+    return 'database.db'
 
 def init_db():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect(get_db_path())
     c = conn.cursor()
     
-    # Спочатку перевіряємо, чи існують таблиці
-    c.execute("SELECT name FROM sqlite_master WHERE type='table' AND (name='users' OR name='wishes')")
-    existing_tables = c.fetchall()
+    # Створення таблиць, якщо вони не існують
+    c.execute('''CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        profile_pic TEXT DEFAULT 'default.png'
+    )''')
     
-    if ('users',) not in existing_tables:
-        c.execute('''
-            CREATE TABLE users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                email TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                profile_pic TEXT DEFAULT 'default.png'
-            )
-        ''')
-    
-    if ('wishes',) not in existing_tables:
-        c.execute('''
-            CREATE TABLE wishes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER,
-                title TEXT NOT NULL,
-                description TEXT,
-                price REAL,
-                image TEXT,
-                product_url TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users (id)
-            )
-        ''')
+    c.execute('''CREATE TABLE IF NOT EXISTS wishes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        title TEXT NOT NULL,
+        description TEXT,
+        price REAL,
+        image TEXT,
+        product_url TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+    )''')
     
     conn.commit()
     conn.close()
+
+# Ініціалізація бази даних при запуску
+init_db()
 
 @app.route('/')
 def index():
